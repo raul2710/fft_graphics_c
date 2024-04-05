@@ -8,6 +8,9 @@
 #pragma comment (lib, "user32.lib")
 #pragma comment (lib, "gdi32.lib")
 
+#define q	3		/* for 2^3 points */
+#define N	(1<<q)		/* N-point FFT, iFFT */
+
 typedef uint32_t u32;
 
 int ClientWidth;
@@ -100,50 +103,71 @@ int WINAPI WinMain(HINSTANCE Instance, HINSTANCE PrevInstance, LPSTR Cmd, int Cm
         // Limpa a tela
 
         ClearScreen(0x333333);
-//====================================================================================
-    int r = 40; // raio do circulo
-    int off_set = 100;
-    int x = 0;
-    int y = r;
-    int d = 5/4 - r;
-    //
-    DrawPixel(x+off_set, y+off_set, 0xffffff);
-    DrawPixel(x+off_set, -y+off_set, 0xffffff);
-    DrawPixel(-x+off_set, y+off_set, 0xffffff);
-    DrawPixel(-x+off_set, -y+off_set, 0xffffff);
-    DrawPixel(y+off_set, x+off_set, 0xffffff);
-    DrawPixel(y+off_set, -x+off_set, 0xffffff);
-    DrawPixel(-y+off_set, x+off_set, 0xffffff);
-    DrawPixel(-y+off_set, -x+off_set, 0xffffff);
-    //
-    while (x < y)
-    {
-      if (d < 0)
-      {
-      /* Selecione E */
-      d = d + 2*x + 3;
-      x++;
-         } else{
-         /* Selecione SE */
-         d = d + 2*(x - y) + 5;
-         x++;
-         y--;
-      }/*end if*/
-       DrawPixel(x+off_set, y+off_set, 0xffffff);
-       DrawPixel(x+off_set, -y+off_set, 0xffffff);
-       DrawPixel(-x+off_set, y+off_set, 0xffffff);
-       DrawPixel(-x+off_set, -y+off_set, 0xffffff);
-       DrawPixel(y+off_set, x+off_set, 0xffffff);
-       DrawPixel(y+off_set, -x+off_set, 0xffffff);
-       DrawPixel(-y+off_set, x+off_set, 0xffffff);
-       DrawPixel(-y+off_set, -x+off_set, 0xffffff);
-    } // fim do while
-    //
-    // Mostra a imagem
-//====================================================================================
-     StretchDIBits(DeviceContext, 0, 0, ClientWidth, ClientHeight, 0, 0, ClientWidth, ClientHeight, Memory, &BitmapInfo, DIB_RGB_COLORS, SRCCOPY);
+		//====================================================================================
+		
+		
+		//======================================================================
+		Comp v[N], v1[N], v0[N];
+    
+	    int k;
+		for(k=0; k<N; k++) {
+			v[k].a = 0.125*cos(2*PI*k/(double)N);
+			v[k].b = 0.125*sin(2*PI*k/(double)N);
+			v1[k].a =  0.3*cos(2*PI*k/(double)N);
+			v1[k].b = -0.3*sin(2*PI*k/(double)N);
+			v0[k].a =  0.1*cos(2*PI*k/(double)N);
+			v0[k].b = -0.2*sin(2*PI*k/(double)N);
+		}
+	
+    	test_fft(v1, v0, v, 8);
+	    int r = 40; // raio do circulo
+	    int off_set = 100;
+	    int x = 0;
+	    int y = r;
+	    int d = 5/4 - r;
+	    
+		
+		//=======================================================
+	    DrawPixel(x+off_set, y+off_set, 0xffffff);
+	    DrawPixel(x+off_set, -y+off_set, 0xffffff);
+	    DrawPixel(-x+off_set, y+off_set, 0xffffff);
+	    DrawPixel(-x+off_set, -y+off_set, 0xffffff);
+	    DrawPixel(y+off_set, x+off_set, 0xffffff);
+	    DrawPixel(y+off_set, -x+off_set, 0xffffff);
+	    DrawPixel(-y+off_set, x+off_set, 0xffffff);
+	    DrawPixel(-y+off_set, -x+off_set, 0xffffff);
+	    //
+	    while (x < y)
+	    {
+	      if (d < 0)
+	      {
+	      /* Selecione E */
+	      d = d + 2*x + 3;
+	      x++;
+	         } else{
+	         /* Selecione SE */
+	         d = d + 2*(x - y) + 5;
+	         x++;
+	         y--;
+	      }/*end if*/
+	       DrawPixel(x+off_set, y+off_set, 0xffffff);
+	       DrawPixel(x+off_set, -y+off_set, 0xffffff);
+	       DrawPixel(-x+off_set, y+off_set, 0xffffff);
+	       DrawPixel(-x+off_set, -y+off_set, 0xffffff);
+	       DrawPixel(y+off_set, x+off_set, 0xffffff);
+	       DrawPixel(y+off_set, -x+off_set, 0xffffff);
+	       DrawPixel(-y+off_set, x+off_set, 0xffffff);
+	       DrawPixel(-y+off_set, -x+off_set, 0xffffff);
+	    } // fim do while
+	    //
+	    // Mostra a imagem
+	    
+	    
+	    
+	//====================================================================================
+	    StretchDIBits(DeviceContext, 0, 0, ClientWidth, ClientHeight, 0, 0, ClientWidth, ClientHeight, Memory, &BitmapInfo, DIB_RGB_COLORS, SRCCOPY);
     }
-    test_fft(12, 12, 12, 12);
+    /* Fill v[] with a function of known FFT: */
     getch();
     return 0;
 }

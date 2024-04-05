@@ -60,8 +60,8 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit2]
-FileName=fft_calculate.c
+[Unit3]
+FileName=ift_fft_calculate.h
 CompileCpp=0
 Folder=
 Compile=1
@@ -70,7 +70,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit3]
+[Unit2]
 FileName=fft_calculate.h
 CompileCpp=0
 Folder=
