@@ -141,3 +141,17 @@ void test_fft(const Comp *sig, Comp *f, Comp *sig0, int n) {
     puts("######################");
 }
 
+void fft_magnitude(Comp *complex, float *vector, int len){
+	int i;
+		
+	for(i=0; i < len; i++){
+		vector[i] = sqrt(pow(complex[i].a, 2) + pow(complex[i].b, 2))+5;
+		printf("\n\n%f", vector[i]);
+		printf("\n\n%f", sqrt(pow(complex[i].a, 2) + pow(complex[i].b, 2))+5);
+		printf("\n\n%f", complex[i].a);
+		printf("\n\n%f", complex[i].b);
+		
+	}
+		
+}
+

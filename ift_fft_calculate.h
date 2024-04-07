@@ -20,17 +20,16 @@ typedef struct{real Re; real Im;} complex;
 /* Print a vector of complexes as ordered pairs. */
 static void
 print_vector(
-	     const char *title,
-	     complex *x,
-	     int n)
-{
+	const char *title,
+	complex *x,
+	int n
+){
   int i;
   printf("%s (dim=%d):", title, n);
   for(i=0; i<n; i++ ) printf(" %5.2f,%5.2f ", x[i].Re,x[i].Im);
   putchar('\n');
   return;
 }
-
 
 /* 
    fft(v,N):
@@ -45,8 +44,7 @@ print_vector(
    [8]   Let v[m] = ve[m] + w*vo[m]
    [9]   Let v[m+N/2] = ve[m] - w*vo[m]
  */
-void
-fft( complex *v, int n, complex *tmp )
+void fft( complex *v, int n, complex *tmp )
 {
   if(n>1) {			/* otherwise, do nothing and return */
     int k,m;    complex z, w, *vo, *ve;
@@ -70,7 +68,7 @@ fft( complex *v, int n, complex *tmp )
   }
   return;
 }
-
+
 /* 
    ifft(v,N):
    [0] If N==1 then return.
@@ -84,8 +82,7 @@ fft( complex *v, int n, complex *tmp )
    [8]   Let v[m] = ve[m] + w*vo[m]
    [9]   Let v[m+N/2] = ve[m] - w*vo[m]
  */
-void
-ifft( complex *v, int n, complex *tmp )
+void ifft( complex *v, int n, complex *tmp )
 {
   if(n>1) {			/* otherwise, do nothing and return */
     int k,m;    complex z, w, *vo, *ve;
@@ -109,35 +106,33 @@ ifft( complex *v, int n, complex *tmp )
   }
   return;
 }
-
 
-int
-main(void)
-{
-  complex v[N], v1[N], scratch[N];
-  int k;
-
-  /* Fill v[] with a function of known FFT: */
-  for(k=0; k<N; k++) {
-    v[k].Re = 0.125*cos(2*PI*k/(double)N);
-    v[k].Im = 0.125*sin(2*PI*k/(double)N);
-    v1[k].Re =  0.3*cos(2*PI*k/(double)N);
-    v1[k].Im = -0.3*sin(2*PI*k/(double)N);
-  }
-    
-  /* FFT, iFFT of v[]: */
-  print_vector("Orig", v, N);
-  fft( v, N, scratch );
-  print_vector(" FFT", v, N);
-  ifft( v, N, scratch );
-  print_vector("iFFT", v, N);
-
-  /* FFT, iFFT of v1[]: */
-  print_vector("Orig", v1, N);
-  fft( v1, N, scratch );
-  print_vector(" FFT", v1, N);
-  ifft( v1, N, scratch );
-  print_vector("iFFT", v1, N);
-
-  exit(EXIT_SUCCESS);
-}
+//int main(void)
+//{
+//  complex v[N], v1[N], scratch[N];
+//  int k;
+//
+//  /* Fill v[] with a function of known FFT: */
+//  for(k=0; k<N; k++) {
+//    v[k].Re = 0.125*cos(2*PI*k/(double)N);
+//    v[k].Im = 0.125*sin(2*PI*k/(double)N);
+//    v1[k].Re =  0.3*cos(2*PI*k/(double)N);
+//    v1[k].Im = -0.3*sin(2*PI*k/(double)N);
+//  }
+//    
+//  /* FFT, iFFT of v[]: */
+//  print_vector("Orig", v, N);
+//  fft( v, N, scratch );
+//  print_vector(" FFT", v, N);
+//  ifft( v, N, scratch );
+//  print_vector("iFFT", v, N);
+//
+//  /* FFT, iFFT of v1[]: */
+//  print_vector("Orig", v1, N);
+//  fft( v1, N, scratch );
+//  print_vector(" FFT", v1, N);
+//  ifft( v1, N, scratch );
+//  print_vector("iFFT", v1, N);
+//
+//  exit(EXIT_SUCCESS);
+//}

@@ -1,17 +1,19 @@
-//Exemplo de uso de FFT - componentes de um sinal
+//Frequency components of a signal
 //----------------------------------
-// sinal amostrado a 1000hz  contendo frequencias "puras"
-// em 50 e 70 Hz
-amostragem=1000;
-t = 0:1/amostragem:0.6;
-N=size(t,'*'); //numero de amostras
-s=sin(2*%pi*50*t)+sin(2*%pi*200*t+%pi/4)+grand(1,N,'nor',0,1);
+// build a noides signal sampled at 1000hz  containing to pure frequencies 
+// at 50 and 70 Hz
+sample_rate=8;
+t = 0:1/sample_rate:1;
+N=size(t,'*'); //number of samples
+s=sin(2*%pi*50*t)+sin(2*%pi*70*t+%pi/4);
 
 y=fft(s);
-
-//o sinal s é real, entao a FFT é o conjugado simetrico por isso usamos somente a primeira parte (N/2)
-//
-f=amostragem*(0:(N/2))/N; //vetor com os valores de frequencia
+//the fft response is symmetric we retain only the first N/2 points
+f=sample_rate*(0:(N/2))/N; //associated frequency vector
 n=size(f,'*')
-clf()
+
+subplot(2, 1, 1);
+plot(s);
+
+subplot(2, 1, 2);
 plot(f,abs(y(1:n)))

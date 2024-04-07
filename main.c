@@ -9,7 +9,7 @@
 #pragma comment (lib, "gdi32.lib")
 
 #define q	3		/* for 2^3 points */
-#define N	(1<<q)		/* N-point FFT, iFFT */
+//#define N	(1<<q)		/* N-point FFT, iFFT */
 
 typedef uint32_t u32;
 
@@ -90,7 +90,7 @@ int WINAPI WinMain(HINSTANCE Instance, HINSTANCE PrevInstance, LPSTR Cmd, int Cm
     BitmapInfo.bmiHeader.biCompression = BI_RGB;
 
     HDC DeviceContext = GetDC(Window);
-
+	
     for(;;) {
         MSG Message;
         if(PeekMessage(&Message, NULL, 0, 0, PM_REMOVE)) {
@@ -104,22 +104,6 @@ int WINAPI WinMain(HINSTANCE Instance, HINSTANCE PrevInstance, LPSTR Cmd, int Cm
 
         ClearScreen(0x333333);
 		//====================================================================================
-		
-		
-		//======================================================================
-		Comp v[N], v1[N], v0[N];
-    
-	    int k;
-		for(k=0; k<N; k++) {
-			v[k].a = 0.125*cos(2*PI*k/(double)N);
-			v[k].b = 0.125*sin(2*PI*k/(double)N);
-			v1[k].a =  0.3*cos(2*PI*k/(double)N);
-			v1[k].b = -0.3*sin(2*PI*k/(double)N);
-			v0[k].a =  0.1*cos(2*PI*k/(double)N);
-			v0[k].b = -0.2*sin(2*PI*k/(double)N);
-		}
-	
-    	test_fft(v1, v0, v, 8);
 	    int r = 40; // raio do circulo
 	    int off_set = 100;
 	    int x = 0;
@@ -136,9 +120,18 @@ int WINAPI WinMain(HINSTANCE Instance, HINSTANCE PrevInstance, LPSTR Cmd, int Cm
 	    DrawPixel(y+off_set, -x+off_set, 0xffffff);
 	    DrawPixel(-y+off_set, x+off_set, 0xffffff);
 	    DrawPixel(-y+off_set, -x+off_set, 0xffffff);
+	    
+	    
+		
+
+		
+		
 	    //
 	    while (x < y)
 	    {
+	    	
+	    	
+			
 	      if (d < 0)
 	      {
 	      /* Selecione E */
@@ -160,15 +153,46 @@ int WINAPI WinMain(HINSTANCE Instance, HINSTANCE PrevInstance, LPSTR Cmd, int Cm
 	       DrawPixel(-y+off_set, -x+off_set, 0xffffff);
 	    } // fim do while
 	    //
-	    // Mostra a imagem
+	    int N = 8;
+		Comp *sig, *f, *sig0;
+		
+		sig = (Comp *)malloc(sizeof(Comp) * (size_t)N);
+	    sig0 = (Comp *)malloc(sizeof(Comp) * (size_t)N);
+	    f = (Comp *)malloc(sizeof(Comp) * (size_t)N);
+    
+		
+		int k;
+		
+		for(k=0; k<N; k++) {
+			sig[k].a = sin(2*PI*50*k/N)+sin((2*PI*70*k/N)+PI/4);
+			sig[k].b = 0;
+		}
+		
+		test_fft(sig, f, sig0, N);
+    	float vector_teste[N];
+		fft_magnitude(f, vector_teste, N);
+		
+		fft_magnitude(f, vector_teste, N);
+		
+		int yw, xw;
+    	for (yw = 0; yw < N; yw++){
+    		printf("%f\n", vector_teste[yw]);
+    		for(xw=0; xw< vector_teste[yw]; xw++ )
+    			DrawPixel(yw+200, 500-xw, 0xffffff);
+		}
+        
+		
+		// Desenhando o sinal de entrada	
+		float jjk;
+		for(jjk=0; jjk<800; jjk+=0.01) {
+			DrawPixel(jjk+200, (50*sin(2*PI*50*jjk/10000)+50*sin((2*PI*200*jjk/10000)+PI/4)+200), 0xffffff);
+		}
 	    
-	    
-	    
+
 	//====================================================================================
 	    StretchDIBits(DeviceContext, 0, 0, ClientWidth, ClientHeight, 0, 0, ClientWidth, ClientHeight, Memory, &BitmapInfo, DIB_RGB_COLORS, SRCCOPY);
     }
-    /* Fill v[] with a function of known FFT: */
+
     getch();
     return 0;
 }
-
