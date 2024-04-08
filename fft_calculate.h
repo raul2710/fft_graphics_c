@@ -36,6 +36,12 @@ Comp comp_mul(Comp c1, Comp c2) {
     return res;
 }
 
+Comp comp_euler(double x) {
+    Comp res;
+    res.a = cos(x);
+    res.b = sin(x);
+    return res;
+}
 
 void comp_print(Comp comp) {
     printf("%.6f + %.6f i\n", comp.a, comp.b);
@@ -45,13 +51,12 @@ void comp_print(Comp comp) {
 #define PI 3.141592653589793
 #define SQR(x) ((x) * (x))
 
-/* Calcula e^(ix) */
-Comp comp_euler(double x) {
-    Comp res;
-    res.a = cos(x);
-    res.b = sin(x);
-    return res;
-}
+#define comp_mul_self(c, c2) \
+do { \
+    double ca = c->a; \
+    c->a = ca * c2->a - c->b * c2->b; \
+    c->b = c->b * c2->a + ca * c2->b; \
+} while (0)
 
 #define comp_mul_self(c, c2) \
 do { \
@@ -141,13 +146,14 @@ void test_fft(const Comp *sig, Comp *f, Comp *sig0, int n) {
     puts("######################");
 }
 
+
 void fft_magnitude(Comp *complex, float *vector, int len){
 	int i;
 		
 	for(i=0; i < len; i++){
-		vector[i] = sqrt(pow(complex[i].a, 2) + pow(complex[i].b, 2))+5;
+		vector[i] = sqrt(pow(complex[i].a, 2) + pow(complex[i].b, 2));
 		printf("\n\n%f", vector[i]);
-		printf("\n\n%f", sqrt(pow(complex[i].a, 2) + pow(complex[i].b, 2))+5);
+		printf("\n\n%f", sqrt(pow(complex[i].a, 2) + pow(complex[i].b, 2)));
 		printf("\n\n%f", complex[i].a);
 		printf("\n\n%f", complex[i].b);
 		
