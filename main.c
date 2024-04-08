@@ -1,3 +1,14 @@
+/*
+	O cósigo a seguir visa mostra o gráfico da transformada de fourier
+e ao lado o gráfico gerado pelas amostras pegas do sinal, se assemelhando ao gráfico 
+apresentado no sci-lab na aula de telecomunicações
+
+Participantes:
+Raul Taraves Danielli 	836461
+Eduardo Colombari		835667
+
+*/
+
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <stdint.h>
@@ -34,10 +45,10 @@ void ClearScreen(u32 Color) {
     }
 }
 
-void draw_fft(HDC DeviceContext, Comp *y, int n, int width, int height) {
+void DrawFft(HDC DeviceContext, Comp *y, int n, int width, int height, int xOrigin, int yOrigin) {
     double x_step = (double)width / n;	// Faz divide o comprimento pela quantidade de amostra
     double max_amplitude = 0;
-    
+ 
     // Escreve o título acima no centro da tela
     RECT textRect;
 	DrawText(DeviceContext,TEXT("Gráfico Magnitude com dominio da frequncia"),-1,&textRect, DT_CENTER | DT_NOCLIP);     
@@ -50,9 +61,9 @@ void draw_fft(HDC DeviceContext, Comp *y, int n, int width, int height) {
         if (amplitude > max_amplitude)
             max_amplitude = amplitude;
     }
-
-    // Faz o gráfico na tela
-    MoveToEx(DeviceContext, 0, height, NULL); // Coloca no inicio do gráfico
+	
+    // Desenha o gráfico na tela
+    MoveToEx(DeviceContext, xOrigin, height, NULL); // Coloca o cursor na origem do gráfico na tela
     for (i = 0; i < n / 2; i++) {
         double x = i * x_step;
         double amplitude = sqrt(y[i].a * y[i].a + y[i].b * y[i].b);
@@ -64,29 +75,21 @@ void draw_fft(HDC DeviceContext, Comp *y, int n, int width, int height) {
         // Coloca a cor da linha como branca
         SelectObject(DeviceContext,GetStockObject(WHITE_PEN));
         
-        // Desenha uma linha até o próximo ponto do gráfico
-        // DrawPixel(x, y_pos, 0xFFFFFF);
-
-        LineTo(DeviceContext, x, y_pos);
+		// Desenha uma linha até o próximo ponto do gráfico
+        LineTo(DeviceContext, x + xOrigin, y_pos + yOrigin);
     }
 }
 
-void draw_signal(HDC DeviceContext, Comp *y, int n, int width, int height) {
-    double x_step = (double)width / n;	// Faz divide o comprimento pela quantidade de amostra
-    double max_amplitude = 0;
+void DrawSignal(HDC DeviceContext, Comp *y, int n, int width, int height, int xOrigin, int yOrigin) {
+    double x_step = (double)width / n;	// Divide o comprimento selecionado pela quantidade de amostra
     
-    // Faz o gráfico na tela
-    MoveToEx(DeviceContext, 0, y[1].a * 100 + 300, NULL); // Coloca no inicio do gráfico
-    // Desenhando o sinal de entrada
-    int i;
+    MoveToEx(DeviceContext, xOrigin, y[1].a * 50 + xOrigin, NULL); // Coloca no inicio do gráfico
+    
+	// Desenhando o sinal de entrada
+	int i;
 	for (i=0; i<n/2; i++)	
-    	LineTo(DeviceContext, i*10, y[i].a * 100 + 300);
-//		float i;
-//		for(i=0; i<800; i+=0.01) {
-//			DrawPixel(i+200, y[i].a);
-//		}
+    	LineTo(DeviceContext, i*2.5 + xOrigin, y[i].a * 50 + xOrigin);
 }
-
 
 LRESULT CALLBACK WindowProc(HWND Window, UINT Message, WPARAM WParam, LPARAM LParam) {
     switch(Message) {
@@ -148,6 +151,8 @@ int WINAPI WinMain(HINSTANCE Instance, HINSTANCE PrevInstance, LPSTR Cmd, int Cm
 
     HDC DeviceContext = GetDC(Window);
     
+    //DrawLine()
+    
     // Define as frequencias da onda 1 e 2 que serão somadas
     int f1 = 50;
     int f2 = 200;
@@ -156,6 +161,7 @@ int WINAPI WinMain(HINSTANCE Instance, HINSTANCE PrevInstance, LPSTR Cmd, int Cm
     int amostragem = 1000;
     
     // Número de amostras
+    //int N = 0.6/(1/amostragem); 
     int N = 601; 
     
     // Cria o vetor tempo
@@ -188,16 +194,16 @@ int WINAPI WinMain(HINSTANCE Instance, HINSTANCE PrevInstance, LPSTR Cmd, int Cm
         ClearScreen(0x333333);
 
         // Desenha o sinal de entrada	
-		float jjk;
-		for(jjk=0; jjk<800; jjk+=0.01) {
-			DrawPixel(jjk+200, (50*sin(2*M_PI*50*jjk/10000)+50*sin((2*M_PI*200*jjk/10000)+M_PI/4)+200), 0xffffff);
-		}
-        
-        // Desenha o os pontos de amostragem
-        //draw_signal(DeviceContext, signal, N, ClientWidth, ClientHeight);
+//		float jjk;
+//		for(jjk=0; jjk<800; jjk+=0.01) {
+//			DrawPixel(jjk+200, (50*sin(2*M_PI*50*jjk/10000)+50*sin((2*M_PI*200*jjk/10000)+M_PI/4)+200), 0xffffff);
+//		}
+		
+        // Desenha o sinal partindo dos pontos de amostragem
+        DrawSignal(DeviceContext, signal, N, 500, 500,  380, 300);
         
         // Desenha o gráfico da transformada
-		draw_fft(DeviceContext, signalOut, N, ClientWidth, ClientHeight);
+		DrawFft(DeviceContext, signalOut, N, 500, 500, 40, 20);
 		
         // Mostra a imagem
         StretchDIBits(DeviceContext, 0, 0, ClientWidth, ClientHeight, 0, 0, ClientWidth, ClientHeight, Memory, &BitmapInfo, DIB_RGB_COLORS, SRCCOPY);
